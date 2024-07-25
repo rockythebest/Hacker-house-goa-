@@ -1,0 +1,132 @@
+﻿// Import the Garden SDK library
+const { GardenSDK } = require('@gardenfinance/sdk');
+
+
+// Set up the Garden SDK configuration
+const gardenSdkConfig = {
+  // Localnet configuration
+  localnet: {
+    network: 'localnet',
+    bitcoinNodeUrl: 'https://localhost:8332',
+    wbtcNodeUrl: 'https://localhost:8545',
+  },
+  // Testnet configuration
+  testnet: {
+    network: 'testnet',
+    bitcoinNodeUrl: 'https://testnet.bitcoin.node',
+    wbtcNodeUrl: 'https://testnet.wbtc.node',
+  },
+};
+
+
+// Initialize the Garden SDK with localnet configuration
+const gardenSdkLocalnet = new GardenSDK(gardenSdkConfig.localnet);
+
+
+// Initialize the Garden SDK with testnet configuration
+const gardenSdkTestnet = new GardenSDK(gardenSdkConfig.testnet);
+
+
+// Set up the BTC and WBTC wallets for localnet
+const btcWalletLocalnet = gardenSdkLocalnet.getBtcWallet();
+const wbtcWalletLocalnet = gardenSdkLocalnet.getWbtcWallet();
+
+
+// Set up the BTC and WBTC wallets for testnet
+const btcWalletTestnet = gardenSdkTestnet.getBtcWallet();
+const wbtcWalletTestnet = gardenSdkTestnet.getWbtcWallet();
+
+
+// Define a function to perform BTC → WBTC swap on localnet
+async function swapBtcToWbtcLocalnet(amount) {
+  try {
+    // Lock BTC in the localnet Bitcoin node
+    const btcTxId = await btcWalletLocalnet.lock(amount);
+
+
+    // Mint WBTC on the localnet WBTC node
+    const wbtcTxId = await wbtcWalletLocalnet.mint(amount);
+
+
+    // Verify the swap transaction
+    await gardenSdkLocalnet.verifySwap(btcTxId, wbtcTxId);
+
+
+    console.log(`Swapped ${amount} BTC to WBTC successfully on localnet!`);
+  } catch (error) {
+    console.error(`Error swapping BTC to WBTC on localnet: ${error.message}`);
+  }
+}
+
+
+// Define a function to perform WBTC → BTC swap on localnet
+async function swapWbtcToBtcLocalnet(amount) {
+  try {
+    // Burn WBTC on the localnet WBTC node
+    const wbtcTxId = await wbtcWalletLocalnet.burn(amount);
+
+
+    // Unlock BTC in the localnet Bitcoin node
+    const btcTxId = await btcWalletLocalnet.unlock(amount);
+
+
+    // Verify the swap transaction
+    await gardenSdkLocalnet.verifySwap(wbtcTxId, btcTxId);
+
+
+    console.log(`Swapped ${amount} WBTC to BTC successfully on localnet!`);
+  } catch (error) {
+    console.error(`Error swapping WBTC to BTC on localnet: ${error.message}`);
+  }
+}
+
+
+// Define a function to perform BTC → WBTC swap on testnet
+async function swapBtcToWbtcTestnet(amount) {
+  try {
+    // Lock BTC in the testnet Bitcoin node
+    const btcTxId = await btcWalletTestnet.lock(amount);
+
+
+    // Mint WBTC on the testnet WBTC node
+    const wbtcTxId = await wbtcWalletTestnet.mint(amount);
+
+
+    // Verify the swap transaction
+    await gardenSdkTestnet.verifySwap(btcTxId, wbtcTxId);
+
+
+    console.log(`Swapped ${amount} BTC to WBTC successfully on testnet!`);
+  } catch (error) {
+    console.error(`Error swapping BTC to WBTC on testnet: ${error.message}`);
+  }
+}
+
+
+// Define a function to perform WBTC → BTC swap on testnet
+async function swapWbtcToBtcTestnet(amount) {
+  try {
+    // Burn WBTC on the testnet WBTC node
+    const wbtcTxId = await wbtcWalletTestnet.burn(amount);
+
+
+    // Unlock BTC in the testnet Bitcoin node
+    const btcTxId = await btcWalletTestnet.unlock(amount);
+
+
+    // Verify the swap transaction
+    await gardenSdkTestnet.verifySwap(wbtcTxId, btcTxId);
+
+
+    console.log(`Swapped ${amount} WBTC to BTC successfully on testnet!`);
+  } catch (error) {
+    console.error(`Error swapping WBTC to BTC on testnet: ${error.message}`);
+  }
+}
+
+
+// Test the swap functions
+swapBtcToWbtcLocalnet(0.1);
+swapWbtcToBtcLocalnet(0.1);
+swapBtcToWbtcTestnet(0.1);
+swapWbtcToBtcTestnet(0.1);
